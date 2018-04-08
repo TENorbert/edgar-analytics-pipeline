@@ -234,6 +234,31 @@ def read_csv_to_dict(csv_filename):
 
 	return data_dict
 
+
+def add_to_dataframe(data_frame, column_list, column_name):
+	"""
+		Adds new column with list to data frame
+		Input: DataFrame, column_list, column_name
+		Return: Nothing
+	"""
+	try:
+	    data_frame[column_name] = column_list
+	except Exception as e:
+		print(e, type(e))
+
+
+def add_to_dict(data_dict, column_list, column_name):
+	"""
+		Adds new column with list to data frame
+		Input: DataFrame, column_list, column_name
+		Return: Nothing
+	"""	
+	try:
+	    data_dict[column_name] = column_list
+	except Exception as e:
+		print(e, type(e))
+		
+
 ## Not working as wanted
 def data_from_csv_as_dict(csv_filename):
     """
