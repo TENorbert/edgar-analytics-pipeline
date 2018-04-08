@@ -1,6 +1,6 @@
 #!python3
 
-from sessionization import Sessionization
+from sessionization import VisitorActivity, VisitorReport
 from helper import command_parser
 import os, sys, argparse
 
@@ -16,14 +16,12 @@ def main():
 	inactivity_file = passed_files["inactivity"]
 	session_file = passed_files["session"]
 
-	ss = Sessionization(data,inactivity_file,session_file)
-	#ss.read_csv()
-	#ss.read_csv_as_dict()
-	#ss.print_data()  
-	#ss.read_csv_to_dict()
-	ss.read_csv_pandas()
-	print("\n")
-	ss.get_time_ip_document()
+	vis_act = VisitorActivity()
+	vis_act.compute_elapsed_time()
+	vis_act.compute_inactivity()
+
+	vis_report = VisitorReport()
+	vis_report.generate_report()
 
 
 
