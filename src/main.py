@@ -1,7 +1,7 @@
 #!python3
 
-from sessionization import VisitorActivity, VisitorReport
-from helper import command_parser
+from sessionization import analyze
+from helper import command_parser, get_inactivity_period, get_data_lines
 import os, sys, argparse
 
 
@@ -11,17 +11,19 @@ def main():
 	"""
 		containts call to major impt funtions!
 	"""
+	inactivity_period = 0
+
 	passed_files = command_parser()
-	data = passed_files["logcsv"]
+	data_file = passed_files["logcsv"]
 	inactivity_file = passed_files["inactivity"]
 	session_file = passed_files["session"]
 
-	vis_act = Weblog()
-	vis_act.compute_elapsed_time()
-	vis_act.compute_inactivity()
+	inactivity_period = get_inactivity_period(inactivity_file)
+	print(inactivity_period)
 
-	vis_report = VisitorReport()
-	vis_report.generate_report()
+	lines = get_data_lines(data_file)
+	analyze(lines)
+	
 
 
 

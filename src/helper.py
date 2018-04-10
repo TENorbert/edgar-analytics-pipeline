@@ -90,7 +90,7 @@ def read_csv_as_list(csv_filename, field_name):
 		        	break
 		        	
 	except Exception:
-		column_list = {}
+		column_list = []
 		#print(e, type(e))
 
 	return column_list
@@ -303,50 +303,11 @@ def add_to_dict(data_dict, column_list, field_name):
 	    data_dict[field_name] = column_list
 	except Exception as e:
 		print(e, type(e))
-		
-
-## Not working as wanted
-def data_from_csv_as_dict(csv_filename):
-    """
-        Reads a cvs file using the DictReader method which
-        is faster and mmemory efficient using generators.
-    """
-    data_dict = {}
-    try:
-        with open(csv_filename, 'r') as csv_file:
-            csv_reader = csv.DictReader(csv_file)
-            for row in csv_reader:
-            	#print(row)
-            	#data_dict['ip'].add(row['ip'])           	
-            	'''
-            	data_dict['ip'] = row['ip']
-            	data_dict['date'] = row['date']
-            	data_dict['time'] = row['time']
-            	data_dict['cik'] = row['cik']
-            	data_dict['accession'] = row['accession']
-            	data_dict['extention'] = row['extention']
-
-            	#data_dict['zone'] = row['zone']
-            	#data_dict['code'] = row['code']
-            	#data_dict['size'] = row['size']
-            	#data_dict['idx'] = row['idx']
-            	#data_dict['norefer'] = row['norefer']
-            	#data_dict['noagent'] = row['noagent']
-            	#data_dict['find'] = row['find']
-            	#data_dict['crawler'] = row['crawler']
-            	#data_dict['browser'] = row['browser']
-            	'''
-    except Exception as e:
-        msg = "Can't read csv file {}".format(csv_filename)
-        print(msg) 
-
-    if len(data_dict) != 0:
-    	return data_dict
 
 
 def read_csv(csv_filename):
     """
-     	Reads a csv file and creates a dictionary
+     	Its suppose to read a csv file and creates a dictionary
     """
     try:
         with open(csv_filename, 'r') as cvs_file:
@@ -356,6 +317,58 @@ def read_csv(csv_filename):
     except Exception as e:
         msg = "Can't read csv file {}".format(csv_filename)
         print(msg) 
+	
+
+
+
+
+def get_csv_data(csv_filename):
+    """
+        Reads a cvs file using the DictReader method which
+        is faster and mmemory efficient using generators.
+    """
+    try:
+        with open(csv_filename, 'r') as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            #for row in csv_reader:
+           		#print(row)
+    except Exception as e:
+        msg = "Can't read csv file {}".format(csv_filename)
+        print(msg) 
+
+
+
+def get_data_lines(data_file):
+	'''
+	   Reads cvs files as lines(not very efficient esp for large files as
+	   it reads all the lines at once!)
+	   Returns: lines read from file
+	'''
+	try:
+		with open(data_file, 'r') as f_obj:
+			next(f_obj) #skip header line
+			lines = f_obj.readlines()
+		return lines
+	except Exception:
+		print("Can't open file = {}".format(data_file))
+
+
+
+def get_inactivity_period(file_name):
+	'''
+	 	Read single variable in file e.g inactivity_perion.txt file
+	 	Return: value (single value read from file)
+	'''
+	value = -1
+	try:
+		with open(file_name, 'r') as f_obj:
+		    for line in f_obj: # one line at a time(More efficient)
+		        line = line.strip()
+		        split_line = line.split(",") #split row with comma seperated.
+		        value = split_line[0] 
+		return value
+	except Exception:
+		print("Unable to open file = {}".format(file_name))
 
 
 
@@ -462,6 +475,8 @@ if __name__=="__main__":
     ip_address = list_from_datafile(files["logcsv"], 'ip')
     #print(ip_address)
     data = data_from_csv_as_dict(files["logcsv"])
+    inactivity_period = get_inactivity_period(files["inactivity"])
+    print(inactivity_period)
     #print(data)
     #print(data['ip'])
     #print(len(data['zone']))
