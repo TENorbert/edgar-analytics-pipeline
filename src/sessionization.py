@@ -4,11 +4,11 @@ import unittest
 
 
 
-class VisitorActivity(object):
+class Weblog(object):
     """
-      Takes ip_address(list), time(list), document(list) and creates
-      produces session timeout time for each unqiue user(ip Address).
-      Each Unique user is identified by a unique Ip Address
+      Takes ip_address, dateTime, document and creates a weblog(session) Object
+      session timeout time for each unqiue user(ip Address).
+      Each unique user is identified by a unique Ip Address
       All variables are read from a Weblog csv file
     """
     #def __init__(self, ifile, inacfile, ofile):
