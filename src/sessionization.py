@@ -118,6 +118,11 @@ def analyze(lines):
         key, wlog = weblog_queue.get()
         print("key : " + str(key) + " Weblog.ip : " + str(wlog.get_ip()) + "\n")
 
+        #TO DO:
+        # -- Perform Analysis()
+        # -- Extract Outputs(ip, startTime, endtime, duration,  number of req docs, )
+        # -- Write Output to files
+
 
      print(len(wl_list))
     for wlog in wl_list:
