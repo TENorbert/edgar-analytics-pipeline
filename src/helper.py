@@ -307,17 +307,24 @@ def add_to_dict(data_dict, column_list, field_name):
 
 def read_csv(csv_filename):
     """
-     	Its suppose to read a csv file and creates a dictionary
+     	Read cvs file with header byt skipping the first line(header line) 
+     	and returns a list of all the lines read
     """
+    cvs_rows = []
     try:
         with open(csv_filename, 'r') as cvs_file:
             csv_reader = csv.reader(cvs_file)
-            next(csv_reader) # skip header line!
+            #next(csv_reader) # skip header line!
+            for row in cvs_reader:
+            	if cvs_reader.line_num == 1: #skip first line
+            		continue
+            	cvs_rows.append(row)
             print(cvs_reader)
     except Exception as e:
         msg = "Can't read csv file {}".format(csv_filename)
         print(msg) 
 	
+	return cvs_rows
 
 
 
