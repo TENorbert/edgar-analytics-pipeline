@@ -1,4 +1,4 @@
-#! python3
+	#! python3
 #  --- potentian solution
 
 
@@ -87,3 +87,46 @@ def write_results(file_name, weblog_queue):
 
 
 
+
+'''
+def analyze(lines):
+    '''
+        #creates dictionary of weblogs for each line
+    '''
+    weblog_queue = Q.PriorityQueue() ## scalability
+    wl_list = []
+    wl_number = 0 ## use as priority
+    try:
+        for line in lines:
+            line = line.strip()
+            llist = line.split(',')
+            if len(llist) == 15:
+                # now lets do all the magic
+                ip_adr = llist[0]
+                dt_obj = create_date_time(llist[1], llist[2])
+                req_doc = create_request_document(llist[4], llist[5], llist[6])
+                wl = Weblog(ip_adr, dt_obj, dt_obj, req_doc)
+                #print(" Weblog.ip : " + str(wl.get_ip()) + "\n")
+                weblog_queue.put((wl_number, wl))
+                wl_list.append(wl)
+                wl_number += 1
+    except Exception as e:
+        print(e, type(e))
+
+   
+
+    while not weblog_queue.empty():
+        key, wlog = weblog_queue.get()
+        print("key : " + str(key) + " Weblog.ip : " + str(wlog.get_ip()) + "\n")
+
+        #TO DO:
+        # -- Perform Analysis()
+        # -- Extract Outputs(ip, startTime, endtime, duration,  number of req docs, )
+        # -- Write Output to files
+
+
+     print(len(wl_list))
+    for wlog in wl_list:
+        print(" Weblog.ip : " + str(wlog.get_ip()) + "\n")
+
+'''

@@ -21,8 +21,8 @@ def main():
 	inactivity_period = get_inactivity_period(inactivity_file)
 	print(inactivity_period)
 
-	lines = get_data_lines(data_file)
-	analyze(lines)
+	#lines = get_data_lines(data_file)
+	analyze(passed_files["logcsv"], inactivity_period)
 	
 
 

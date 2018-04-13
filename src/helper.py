@@ -10,6 +10,7 @@ import numpy as np
 import csv 
 
 from datetime import datetime
+import subprocess  # using linux like stuff
 
 
 
@@ -310,21 +311,38 @@ def read_csv(csv_filename):
      	Read cvs file with header byt skipping the first line(header line) 
      	and returns a list of all the lines read
     """
-    cvs_rows = []
+    csv_rows = []
     try:
-        with open(csv_filename, 'r') as cvs_file:
-            csv_reader = csv.reader(cvs_file)
-            #next(csv_reader) # skip header line!
-            for row in cvs_reader:
-            	if cvs_reader.line_num == 1: #skip first line
-            		continue
-            	cvs_rows.append(row)
-            print(cvs_reader)
+    	csv_fobj = open(csv_filename)
+    	readobj = csv.reader(csv_fobj)
+    	for row in readobj:
+    		if readobj.line_num == 1:
+    			continue
+    		csv_rows.append(row)
     except Exception as e:
         msg = "Can't read csv file {}".format(csv_filename)
         print(msg) 
 	
-	return cvs_rows
+    return csv_rows
+
+
+
+def get_last_row(file_name):
+	'''
+	 Returns the last row of a file
+	'''
+	f_obj = open(file_name, 'r')
+	last_line = subprocess.check_output("tail", "-1", file_name)
+	last = [ x for x in last_line.split(',')[2:]]
+
+	if len(last_row) == 15:
+		last_row = last
+	else:
+		print("last row has length = {}".format(len(last_row)))
+
+	f_obj.close()
+
+	return last_row
 
 
 
@@ -481,7 +499,7 @@ if __name__=="__main__":
     #print(files["logcsv"],files["inactivity"], files["inactivity"] )
     ip_address = list_from_datafile(files["logcsv"], 'ip')
     #print(ip_address)
-    data = data_from_csv_as_dict(files["logcsv"])
+    #data = data_from_csv_as_dict(files["logcsv"])
     inactivity_period = get_inactivity_period(files["inactivity"])
     print(inactivity_period)
     #print(data)
@@ -522,3 +540,8 @@ if __name__=="__main__":
     #date_time = [ time_obj = datetime.strptime(time_str, '[%d/%b/%Y:%H:%M:%S %z]')]
     #print(date_list)
     
+    data_read = read_csv(files["logcsv"])
+    for d in data_read:
+    	print("length = {} and list = {} \n".format(len(d), d))
+
+    print(data_read[-1])
