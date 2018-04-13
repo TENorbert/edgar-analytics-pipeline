@@ -89,6 +89,45 @@ def write_results(file_name, weblog_queue):
 
 
 '''
+def analyze(csv_filename, inactivity_period):
+    '''
+        creates dictionary of weblogs for each line
+    '''
+    weblog_queue = Q.PriorityQueue() ## scalability
+    wl_number = 0 ## use as priority
+    try:
+        #print(get_last_row(csv_filename)) # buffer size must be interger <class, TypeErro>
+        csv_fobj = open(csv_filename)
+        #last_row = csv_fobj.readlines()[-1]  ## Last Row
+        readobj = csv.reader(csv_fobj)
+        for row in readobj:
+            row_num = readobj.line_num
+            if row_num == 1: ## Skip title line
+                continue
+
+            
+
+            #print(last_row)
+            do_analysis(row, row_num, weblog_queue, inactivity_period)
+
+    except Exception as e:
+        print(e, type(e))
+
+    """
+    while not weblog_queue.empty():
+        key, wlog = weblog_queue.get()
+        #print("key : " + str(key) + " Weblog.ip : " + str(wlog.get_ip()) + "\n")
+        print("key : " + str(key) + " Weblog IP = : " + str(wlog[0] + "\n"))
+    """
+        #TO DO:
+        # -- Perform Analysis()
+        # -- Extract Outputs(ip, startTime, endtime, duration,  number of req docs, )
+        # -- Write Output to files
+
+
+'''
+
+'''
 def analyze(lines):
     '''
         #creates dictionary of weblogs for each line

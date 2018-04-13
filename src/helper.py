@@ -10,7 +10,9 @@ import numpy as np
 import csv 
 
 from datetime import datetime
-import subprocess  # using linux like stuff
+from dateutil.parser import parse
+import math
+#import subprocess  # using linux like stuff
 
 
 
@@ -402,18 +404,18 @@ def create_date_time(date_str, time_str):
 		Takes date and time as string and creates a datetime object
 	'''
 	try:
-		dt_obj = ''
+		dt_obj = datetime.now().strftime('%Y-%b-%d:%H:%M:%S')
 		if isinstance(date_str, str) and isinstance(time_str, str):
 			dt_str = date_str + ":" + time_str
 			dt_obj = datetime.strptime(dt_str, '%Y-%m-%d:%H:%M:%S')
-			return dt_obj
 		else:
 			dt_str = str(date_str) + ":" + str(time_str)
 			dt_obj = datetime.strptime(dt_str, '%Y-%m-%d:%H:%M:%S')
-		return dt_obj
-
 	except Exception as e:
 		print(e, type(e))
+
+	#return dt_obj.strftime('%Y-%m-%d:%H:%M:%S')
+	return str(dt_obj.strftime('%Y-%m-%d:%H:%M:%S'))
 
 
 def create_request_document(cik_str, acc_str, ext_str):
@@ -445,10 +447,15 @@ def get_elapse_time(time_1_obj, time_2_obj):
 			if time_2_obj > time_1_obj:
 			    elapse_time = (time_2_obj - time_1_obj).seconds
 			else:
-			    elapse_time = aps(time_1_obj - time_2_obj).seconds
-		return elapse_time
+				elapse_time = (time_2_obj - time_1_obj).seconds
+		else:
+			dt1  = datetime.strptime(time_1_obj, '%Y-%m-%d:%H:%M:%S')
+			dt2 = datetime.strptime(time_2_obj, '%Y-%m-%d:%H:%M:%S')
+			elapse_time = (dt2 - dt1).seconds
 	except Exception as e:
 		print(e, type(e))
+
+	return int(elapse_time)
 
 
 
@@ -536,12 +543,12 @@ if __name__=="__main__":
     else:
     	print("Session with {} has Not ended".format(time_obj0))
 
-    print("Time Elapse is {} s".format(duration))
+    print("Time Elapse is {}".format(duration))
     #date_time = [ time_obj = datetime.strptime(time_str, '[%d/%b/%Y:%H:%M:%S %z]')]
     #print(date_list)
     
-    data_read = read_csv(files["logcsv"])
-    for d in data_read:
-    	print("length = {} and list = {} \n".format(len(d), d))
+    #data_read = read_csv(files["logcsv"])
+    #for i in range(len(data_read)):
+    #	print("length = {} and list = {} \n".format(len(data_read[i]), data_read[i]))
 
-    print(data_read[-1])
+    #print(data_read[-1])

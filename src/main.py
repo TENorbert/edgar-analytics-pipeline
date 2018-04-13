@@ -18,7 +18,7 @@ def main():
 	inactivity_file = passed_files["inactivity"]
 	session_file = passed_files["session"]
 
-	inactivity_period = get_inactivity_period(inactivity_file)
+	inactivity_period = int(get_inactivity_period(inactivity_file))
 	print(inactivity_period)
 
 	#lines = get_data_lines(data_file)
