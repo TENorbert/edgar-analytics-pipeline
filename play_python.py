@@ -4,7 +4,7 @@
 from datetime import datetime
 from datetime import date
 from datetime import time
-from datetime import timedelta
+from datetime import ti
 
 try:
     import Queue as Q # ver < 3.0
@@ -25,7 +25,9 @@ def main():
      
     print("The Elapse Time = {} s".format(time_elapse_in_s))
     '''
-    myq = Q.Queue()
+    '''
+    #myq = Q.Queue()
+    myq = Q.PriorityQueue()
     
     doc = {'a': 1, 'b': 2, 'c': 1, 'd': 4}
     count = 0
@@ -38,6 +40,10 @@ def main():
     while not myq.empty():
         next_level = myq.get()
         print("Processing item = {}".format(next_level))
+    '''
+
+
+
 
 if __name__ == '__main__':
    

@@ -59,6 +59,158 @@ def read_input_files():
 
 
 
+def read_csv(csv_filename):
+	"""
+         Read cvs file with header byt skipping the first line(header line)
+         and returns a list of all the lines read
+    """
+	csv_rows = []
+	try:
+		csv_fobj = open(csv_filename)
+		readobj = csv.reader(csv_fobj)
+		for row in readobj:
+			if readobj.line_num == 1:
+				continue
+			csv_rows.append(row)
+	except Exception as e:
+		msg = "Can't read csv file {}".format(csv_filename)
+		print(msg)
+
+	return csv_rows
+
+
+def write_data_to_file(file_name='./output/sessionization.txt', *data):
+	'''
+		Takes given data and writes the data to txt file
+		append each time.
+		Default file path is '..'
+	'''
+	f_obj = open(file_name, 'a')
+	for d in data:
+		if d == "\n":
+			f_obj.write(str(d))
+		else:
+			f_obj.write(str(d) + ",")
+	f_obj.close()
+
+
+def get_inactivity_period(file_name):
+	'''
+	 	Read single variable in file e.g inactivity_perion.txt file
+	 	Return: value (single value read from file)
+	'''
+	value = -1
+	try:
+		with open(file_name, 'r') as f_obj:
+		    for line in f_obj: # one line at a time(More efficient)
+		        line = line.strip()
+		        split_line = line.split(",") #split row with comma seperated.
+		        value = split_line[0]
+		return value
+	except Exception:
+		print("Unable to open file = {}".format(file_name))
+
+
+
+def create_date_time(date_str, time_str):
+	'''
+		Takes date and time as string and creates a datetime object
+	'''
+	try:
+		dt_obj = datetime.now().strftime('%Y-%b-%d:%H:%M:%S')
+		if isinstance(date_str, str) and isinstance(time_str, str):
+			dt_str = date_str + ":" + time_str
+			dt_obj = datetime.strptime(dt_str, '%Y-%m-%d:%H:%M:%S')
+		else:
+			dt_str = str(date_str) + ":" + str(time_str)
+			dt_obj = datetime.strptime(dt_str, '%Y-%m-%d:%H:%M:%S')
+	except Exception as e:
+		print(e, type(e))
+
+	#return dt_obj.strftime('%Y-%m-%d:%H:%M:%S')
+	return str(dt_obj.strftime('%Y-%m-%d:%H:%M:%S'))
+
+
+def create_request_document(cik_str, acc_str, ext_str):
+	'''
+	   The project github page said we can assume that:
+	   a single web page request document = combination( cik, accession, extention)
+	   Takes cik, accession, extention and creates a foul request coument
+	'''
+	try:
+		if isinstance(cik_str, str) and isinstance(acc_str, str) and isinstance(ext_str, str):
+			return (cik_str + "" + acc_str + "" + ext_str)
+		else:
+			return (str(cik_str) + "" + str(acc_str) + "" + str(ext_str))
+	except Exception as e:
+		print(e, type(e))
+
+
+
+def get_elapse_time(time_1_obj, time_2_obj):
+	'''
+		Takes two datetime objects and return their difference(in seconds)
+		as time elapse
+		NB: Although this function does not care about order but please
+			make sure time_2_obj is later than time_1_obj
+	'''
+	elapse_time = -99
+	try:
+		if isinstance(time_1_obj, datetime) and isinstance(time_2_obj, datetime):
+			if time_2_obj > time_1_obj:
+			    elapse_time = (time_2_obj - time_1_obj).seconds
+			else:
+				elapse_time = (time_2_obj - time_1_obj).seconds
+		else:
+			dt1  = datetime.strptime(time_1_obj, '%Y-%m-%d:%H:%M:%S')
+			dt2 = datetime.strptime(time_2_obj, '%Y-%m-%d:%H:%M:%S')
+			elapse_time = (dt2 - dt1).seconds
+	except Exception as e:
+		print(e, type(e))
+
+	return int(elapse_time)
+
+
+
+def has_session_ended(time_1_obj, time_2_obj, inactivity_period=2):
+	'''
+		Takes two date time and check if their elapse
+		time is greater than the session inactivity_period(default = 2 seconds)
+		The session inactivity_period if from inactivity_period.
+		Returns True if duration >= inactivity_period
+		        else False
+	'''
+	try:
+		user_duration = get_elapse_time(time_1_obj, time_2_obj)
+		if user_duration >= inactivity_period:
+			return True
+		else:
+			return False
+	except Exception as e:
+		print(e, type(e))
+
+
+
+def is_less_than(time_1_obj, time_2_obj):
+	'''
+		Takes two datetime objects and return True if time_1_obj < time_2_obj
+		else false
+		NB: Order matters else you'r on ur own!
+			make sure time_2_obj is later than time_1_obj
+	'''
+	try:
+		if isinstance(time_1_obj, datetime) and isinstance(time_2_obj, datetime):
+			if time_2_obj > time_1_obj:
+			    return True
+			else:
+			    return False
+	except Exception as e:
+		print(e, type(e))
+
+
+
+#-----------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------
 def read_csv_as_list(csv_filename, field_name):
 	'''
 		Reads column from csv file & returns list for values
@@ -194,17 +346,6 @@ def list_from_dict(data_dict, data_key):
 
 
 
-def write_data_to_file(file_name='./output/sessionization.txt', *data):
-	'''
-		Takes given data and writes the data to txt file
-		append each time.
-		Default file path is '..'
-	'''
-	f_obj = open(file_name, 'a')
-	for d in data:
-		f_obj.write(d + ',') 
-	f_obj.close()
-
 
 
 def read_csv_to_dict(csv_filename):
@@ -308,24 +449,6 @@ def add_to_dict(data_dict, column_list, field_name):
 		print(e, type(e))
 
 
-def read_csv(csv_filename):
-    """
-     	Read cvs file with header byt skipping the first line(header line) 
-     	and returns a list of all the lines read
-    """
-    csv_rows = []
-    try:
-    	csv_fobj = open(csv_filename)
-    	readobj = csv.reader(csv_fobj)
-    	for row in readobj:
-    		if readobj.line_num == 1:
-    			continue
-    		csv_rows.append(row)
-    except Exception as e:
-        msg = "Can't read csv file {}".format(csv_filename)
-        print(msg) 
-	
-    return csv_rows
 
 
 
@@ -378,124 +501,6 @@ def get_data_lines(data_file):
 		return lines
 	except Exception:
 		print("Can't open file = {}".format(data_file))
-
-
-
-def get_inactivity_period(file_name):
-	'''
-	 	Read single variable in file e.g inactivity_perion.txt file
-	 	Return: value (single value read from file)
-	'''
-	value = -1
-	try:
-		with open(file_name, 'r') as f_obj:
-		    for line in f_obj: # one line at a time(More efficient)
-		        line = line.strip()
-		        split_line = line.split(",") #split row with comma seperated.
-		        value = split_line[0] 
-		return value
-	except Exception:
-		print("Unable to open file = {}".format(file_name))
-
-
-
-def create_date_time(date_str, time_str):
-	'''
-		Takes date and time as string and creates a datetime object
-	'''
-	try:
-		dt_obj = datetime.now().strftime('%Y-%b-%d:%H:%M:%S')
-		if isinstance(date_str, str) and isinstance(time_str, str):
-			dt_str = date_str + ":" + time_str
-			dt_obj = datetime.strptime(dt_str, '%Y-%m-%d:%H:%M:%S')
-		else:
-			dt_str = str(date_str) + ":" + str(time_str)
-			dt_obj = datetime.strptime(dt_str, '%Y-%m-%d:%H:%M:%S')
-	except Exception as e:
-		print(e, type(e))
-
-	#return dt_obj.strftime('%Y-%m-%d:%H:%M:%S')
-	return str(dt_obj.strftime('%Y-%m-%d:%H:%M:%S'))
-
-
-def create_request_document(cik_str, acc_str, ext_str):
-	'''
-	   The project github page said we can assume that:
-	   a single web page request document = combination( cik, accession, extention)
-	   Takes cik, accession, extention and creates a foul request coument
-	'''
-	try:
-		if isinstance(cik_str, str) and isinstance(acc_str, str) and isinstance(ext_str, str):
-			return (cik_str + "" + acc_str + "" + ext_str)
-		else:
-			return (str(cik_str) + "" + str(acc_str) + "" + str(ext_str))
-	except Exception as e:
-		print(e, type(e))
-
-
-
-def get_elapse_time(time_1_obj, time_2_obj):
-	'''
-		Takes two datetime objects and return their difference(in seconds)
-		as time elapse
-		NB: Although this function does not care about order but please
-			make sure time_2_obj is later than time_1_obj 
-	'''
-	elapse_time = -99
-	try:
-		if isinstance(time_1_obj, datetime) and isinstance(time_2_obj, datetime):
-			if time_2_obj > time_1_obj:
-			    elapse_time = (time_2_obj - time_1_obj).seconds
-			else:
-				elapse_time = (time_2_obj - time_1_obj).seconds
-		else:
-			dt1  = datetime.strptime(time_1_obj, '%Y-%m-%d:%H:%M:%S')
-			dt2 = datetime.strptime(time_2_obj, '%Y-%m-%d:%H:%M:%S')
-			elapse_time = (dt2 - dt1).seconds
-	except Exception as e:
-		print(e, type(e))
-
-	return int(elapse_time)
-
-
-
-def has_session_ended(time_1_obj, time_2_obj, inactivity_period=2):
-	'''
-		Takes two date time and check if their elapse
-		time is greater than the session inactivity_period(default = 2 seconds)
-		The session inactivity_period if from inactivity_period.
-		Returns True if duration >= inactivity_period
-		        else False
-	'''
-	try:
-		user_duration = get_elapse_time(time_1_obj, time_2_obj)
-		if user_duration >= inactivity_period:
-			return True
-		else:
-			return False
-	except Exception as e:
-		print(e, type(e))
-
-
-
-def is_less_than(time_1_obj, time_2_obj):
-	'''
-		Takes two datetime objects and return True if time_1_obj < time_2_obj
-		else false
-		NB: Order matters else you'r on ur own!
-			make sure time_2_obj is later than time_1_obj 
-	'''
-	try:
-		if isinstance(time_1_obj, datetime) and isinstance(time_2_obj, datetime):
-			if time_2_obj > time_1_obj:
-			    return True
-			else:
-			    return False
-	except Exception as e:
-		print(e, type(e))
-
-
-
 
 
 

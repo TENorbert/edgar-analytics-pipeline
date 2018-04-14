@@ -9,22 +9,19 @@ import os, sys, argparse
 
 def main():
 	"""
-		containts call to major impt funtions!
+		main with call to major impt funtions!
 	"""
-	inactivity_period = 0
-
 	passed_files = command_parser()
 	data_file = passed_files["logcsv"]
 	inactivity_file = passed_files["inactivity"]
 	session_file = passed_files["session"]
 
 	inactivity_period = int(get_inactivity_period(inactivity_file))
-	print(inactivity_period)
+	#print(inactivity_period)
 
 	#lines = get_data_lines(data_file)
-	analyze(passed_files["logcsv"], inactivity_period)
+	analyze(data_file, inactivity_period)
 	
-
 
 
 if __name__ == "__main__":
