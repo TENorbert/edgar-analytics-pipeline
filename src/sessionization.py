@@ -68,20 +68,19 @@ def do_analysis(data, weblog_queue, inactivity_period):
         if data[i] is not last_weblog:
             #weblog_elements.put(current_weblog.start_datetime, current_weblog)
             #found_weblogs[current_weblog.start_datetime].append(current_weblog)
-            weblog_elements.put(current_weblog)
+            #weblog_elements.put(current_weblog)
 
 
 
             # To Do: 1) Analyze, 2) update Priority Queue
-            """
             analyze_and_update(current_weblog, previous_weblog,
                                weblog_elements,
                                weblog_queue, elapsed_time,
                                inactivity_period
                                )
-            """
+
         else:
-            weblog_elements.put(current_weblog)
+            #weblog_elements.put(current_weblog)
             #found_weblogs[current_weblog.start_datetime].append(current_weblog)
             # To Do: 1)Analyze 2) Update, 3) Add all elements to Priority Queue
             """
@@ -160,8 +159,7 @@ def analyze_and_update(cur_weblog, prev_weblog, f_weblogs_queue, weblog_queue, e
             else:
                 update_weblog(cur_weblog, f_weblogs_queue) # what if elapse_time > period?
         else: # Different ips
-            pass
-            #find_and_udate_or_add_weblog_to_weblogs(cur_weblog, f_weblogs_queue, weblog_queue, period)
+            find_and_udate_or_add_weblog_to_weblogs(cur_weblog, f_weblogs_queue, weblog_queue, period)
     else:
         add_to_weblogs(cur_weblog, f_weblogs_queue)
 
@@ -175,7 +173,7 @@ def add_to_weblogs(c_weblog, f_weblogs_queue):
         found_weblogs_ips.append(wlg.ip_address)
 
     if c_weblog.ip_address not in found_weblogs_ips:
-        print("Adding ip = {} to Weblogs!".format(c_weblog.ip_address))
+        print("Adding ip = {0} & document = {1} to Weblogs!".format(c_weblog.ip_address, c_weblog.request_document))
         f_weblogs_queue.put(c_weblog)
     else:
         print("Did not add to weblog queue!")
@@ -185,15 +183,17 @@ def add_to_weblogs(c_weblog, f_weblogs_queue):
 def update_weblog(c_weblog, f_weblogs_queue):
 
     if f_weblogs_queue.qsize() == 0:
-        f_weblogs_queue.put(c_weblog)
+        add_to_weblogs(c_weblog, f_weblogs_queue)
 
     while not f_weblogs_queue.empty():
         cur_weblog = f_weblogs_queue.get()
-        if(cur_weblog):
-            if cur_weblog.has_same_ip(c_weblog) and cur_weblog.has_same_start_datetime(c_weblog):
-                cur_weblog.update_weblog_with_other(c_weblog)
-            else:
-                f_weblogs_queue.put(c_weblog)
+        if cur_weblog.has_same_ip(c_weblog):
+            if cur_weblog.has_same_start_datetime(c_weblog): #??
+                if cur_weblog.request_document != c_weblog.request_document:
+                    cur_weblog.update_weblog_with_other(c_weblog)
+        else:
+            if cur_weblog.has_same_start_datetime(c_weblog):  # ??
+                add_to_weblogs(c_weblog, f_weblogs_queue)
 
 
 def update_weblog_and_add_to_priority_weblogs(c_weblog, f_weblogs_queue, weblog_queue):
