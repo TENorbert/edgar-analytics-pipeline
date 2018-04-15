@@ -208,6 +208,19 @@ def is_less_than(time_1_obj, time_2_obj):
 		print(e, type(e))
 
 
+def reverse_stack(stack):
+	'''
+	  Takes an imput stack and reverses its content using a list
+	:param stack:
+	:return: Reversed Stack
+	'''
+	items = []
+	while not stack.is_empty():
+		items.append(stack.pop())
+
+	for item in items:
+		stack.push(item)
+
 
 #-----------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------

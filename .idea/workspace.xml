@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6a906090-b5d0-486f-8d78-5d2ad1ca5cec" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/helper.py" afterPath="$PROJECT_DIR$/src/helper.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main.py" afterPath="$PROJECT_DIR$/src/main.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/sessionization.py" afterPath="$PROJECT_DIR$/src/sessionization.py" />
     </list>
@@ -18,21 +19,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="349">
-              <caret line="46" column="50" lean-forward="false" selection-start-line="46" selection-start-column="50" selection-end-line="46" selection-end-column="50" />
+            <state relative-caret-position="790">
+              <caret line="58" column="0" lean-forward="true" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="sessionization.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="sessionization.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/sessionization.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1369">
-              <caret line="109" column="26" lean-forward="true" selection-start-line="109" selection-start-column="26" selection-end-line="109" selection-end-column="26" />
+            <state relative-caret-position="319">
+              <caret line="56" column="35" lean-forward="true" selection-start-line="56" selection-start-column="35" selection-end-line="56" selection-end-column="35" />
               <folding />
             </state>
           </provider>
@@ -61,8 +62,8 @@
       <file leaf-file-name="helper.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/helper.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="622">
-              <caret line="149" column="19" lean-forward="false" selection-start-line="149" selection-start-column="4" selection-end-line="149" selection-end-column="19" />
+            <state relative-caret-position="391">
+              <caret line="219" column="0" lean-forward="true" selection-start-line="219" selection-start-column="0" selection-end-line="219" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -73,18 +74,27 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>make_weblog</find>
-      <find>self.duration</find>
       <find>first_weblog.ip_address</find>
       <find>add_to_weblog</find>
       <find>find_and_udate_or_add_weblog_to_weblogs</find>
       <find>finaly_update_priority_queue</find>
       <find>f_weblogs_queue</find>
+      <find>f_weblog_queue</find>
+      <find>weblog_elements</find>
+      <find>weblog_queue</find>
+      <find>found_weblogs</find>
+      <find>self.duration</find>
+      <find>update_weblog_info</find>
+      <find>add_duration</find>
     </findStrings>
     <replaceStrings>
       <replace>start_datetime</replace>
       <replace>duration</replace>
       <replace>create_weblog</replace>
       <replace>previous_weblog</replace>
+      <replace>found_weblogs</replace>
+      <replace>output_weblogs</replace>
+      <replace>read_weblogs</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -93,10 +103,10 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/helper.py" />
         <option value="$PROJECT_DIR$/play_python.py" />
-        <option value="$PROJECT_DIR$/src/sessionization.py" />
         <option value="$PROJECT_DIR$/src/main.py" />
+        <option value="$PROJECT_DIR$/src/helper.py" />
+        <option value="$PROJECT_DIR$/src/sessionization.py" />
       </list>
     </option>
   </component>
@@ -394,22 +404,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/helper.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="622">
-          <caret line="149" column="19" lean-forward="false" selection-start-line="149" selection-start-column="4" selection-end-line="149" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/sessionization.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1369">
-          <caret line="109" column="26" lean-forward="true" selection-start-line="109" selection-start-column="26" selection-end-line="109" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/output/sessionization.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="126">
@@ -418,10 +412,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/helper.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="219" column="0" lean-forward="true" selection-start-line="219" selection-start-column="0" selection-end-line="219" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="349">
-          <caret line="46" column="50" lean-forward="false" selection-start-line="46" selection-start-column="50" selection-end-line="46" selection-end-column="50" />
+        <state relative-caret-position="790">
+          <caret line="58" column="0" lean-forward="true" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/sessionization.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="319">
+          <caret line="56" column="35" lean-forward="true" selection-start-line="56" selection-start-column="35" selection-end-line="56" selection-end-column="35" />
           <folding />
         </state>
       </provider>
