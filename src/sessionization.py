@@ -3,11 +3,14 @@
 import unittest
 from helper import *  # helper functions
 
+"""
 try:
     import Queue as Q # ver. < 3.0
 except ImportError:
     import queue as Q
 
+
+"""
 
 '''
 ip_list.append(split_line[0])
@@ -19,37 +22,30 @@ ext_list.append(split_line[6])
 '''
 
 
-def analyze(csv_filename, inactivity_period):
+def analyze(csv_filename, weblog_elements, weblog_queue ,inactivity_period):
     '''
         creates dictionary of weblogs for each line
     '''
-    weblog_queue = Q.PriorityQueue() ## scalability
-    wl_number = 0 ## use as priority
+
     try:
         data = read_csv(csv_filename)
-        do_analysis(data, weblog_queue, inactivity_period)
+        do_analysis(data, weblog_elements, weblog_queue, inactivity_period)
 
 
     except Exception as e:
         print(e, type(e))
 
 
-def do_analysis(data, weblog_queue, inactivity_period):
+def do_analysis(data, weblog_elements, weblog_queue, inactivity_period):
     '''
         Performs the analysis
     '''
 
-    # weblog_elements = Q.PriorityQueue() # Testing using PQueues
-    weblog_elements = Q.Queue()  # Testing using PQueues
-    # found_weblogs = {} #found weblogs(key = start_time, values = rows)
     last_weblog = data[-1]
     #print(last_weblog)
     first_weblog = create_weblog(data[0])
-    #found_weblogs[first_weblog.start_datetime] = []
-    #weblog_elements.put(first_weblog)
-    weblog_elements.put(first_weblog)
+    weblog_elements.append(first_weblog)
     #print(first_weblog.ip_address)
-    #print("weblog_elements length = {0}".format(weblog_elements.qsize()))
     '''
     if first_weblog.ip_address is not None:
     #weblog_elements.put(previous_weblog.start_datetime, previous_weblog)
@@ -68,7 +64,7 @@ def do_analysis(data, weblog_queue, inactivity_period):
         if data[i] is not last_weblog:
             #weblog_elements.put(current_weblog.start_datetime, current_weblog)
             #found_weblogs[current_weblog.start_datetime].append(current_weblog)
-            #weblog_elements.put(current_weblog)
+            #weblog_elements.append(current_weblog)
 
 
 
@@ -83,7 +79,7 @@ def do_analysis(data, weblog_queue, inactivity_period):
             #weblog_elements.put(current_weblog)
             #found_weblogs[current_weblog.start_datetime].append(current_weblog)
             # To Do: 1)Analyze 2) Update, 3) Add all elements to Priority Queue
-            """
+
             analyze_and_update(current_weblog, previous_weblog,
                                weblog_elements,
                                weblog_queue, elapsed_time,
@@ -91,7 +87,7 @@ def do_analysis(data, weblog_queue, inactivity_period):
                                )
 
             finaly_update_priority_queue(weblog_elements, weblog_queue)
-            """
+
 
     # To Do: 1) Write Queue Data to Output file
     """
@@ -105,23 +101,20 @@ def do_analysis(data, weblog_queue, inactivity_period):
                            cur_weblog.end_datetime, cur_weblog.request_document,
                            cur_weblog.duration, cur_weblog.doc_number, "\n"
                            )
-    """
+    
 
-    # Print out using Queue
-    print("weblog_elements length = {0}".format(weblog_elements.qsize()))
-
-    # while not weblog_queue.empty():
-    while not weblog_elements.empty():
-        # cur_weblog = weblog_queue.get()
-        cur_weblog = weblog_elements.get()
-        # print(cur_weblog)
+    # Print Queue
+    print("weblog_queue has length = {0}".format(weblog_queue.qsize()))
+    while not weblog_queue.empty():
+        cur_weblog = weblog_queue.get()
+        #print(cur_weblog)
         print("{0}, {1}, {2}, {3}, {4}, {5} \
                             ".format(cur_weblog.ip_address, cur_weblog.start_datetime,
                                      cur_weblog.end_datetime, cur_weblog.request_document,
                                      cur_weblog.duration, cur_weblog.doc_number)
               )
 
-    """
+    
     #using Dictionary
     for key, web_logs in found_weblogs.items():
     # print("found Weblogs \n")
@@ -167,26 +160,25 @@ def analyze_and_update(cur_weblog, prev_weblog, f_weblogs_queue, weblog_queue, e
 
 def add_to_weblogs(c_weblog, f_weblogs_queue):
 
-    found_weblogs_ips = []  # go around non-iterable Queue!
-    while not f_weblogs_queue.empty():
-        wlg = f_weblogs_queue.get()
+    found_weblogs_ips = []  #create possibly sorted list
+    for wlg in f_weblogs_queue:
         found_weblogs_ips.append(wlg.ip_address)
 
     if c_weblog.ip_address not in found_weblogs_ips:
         print("Adding ip = {0} & document = {1} to Weblogs!".format(c_weblog.ip_address, c_weblog.request_document))
-        f_weblogs_queue.put(c_weblog)
+        f_weblogs_queue.append(c_weblog)
     else:
-        print("Did not add to weblog queue!")
+        #f_weblogs_queue.append(c_weblog)
+        pass
 
 
 
 def update_weblog(c_weblog, f_weblogs_queue):
 
-    if f_weblogs_queue.qsize() == 0:
+    if len(f_weblogs_queue) == 0:
         add_to_weblogs(c_weblog, f_weblogs_queue)
 
-    while not f_weblogs_queue.empty():
-        cur_weblog = f_weblogs_queue.get()
+    for cur_weblog in f_weblogs_queue:
         if cur_weblog.has_same_ip(c_weblog):
             if cur_weblog.has_same_start_datetime(c_weblog): #??
                 if cur_weblog.request_document != c_weblog.request_document:
@@ -198,11 +190,11 @@ def update_weblog(c_weblog, f_weblogs_queue):
 
 def update_weblog_and_add_to_priority_weblogs(c_weblog, f_weblogs_queue, weblog_queue):
 
-    while not f_weblogs_queue.empty():
-        cur_weblog = f_weblogs_queue.get()
+    for cur_weblog in f_weblogs_queue:
         if cur_weblog.has_same_ip(c_weblog):
             cur_weblog.update_weblog_with_other(c_weblog)
             weblog_queue.put(cur_weblog)
+
             #remove cur_weblog from f_weblog_queue
             # To Do: How to remove element from Queue? or use Linked List
 
@@ -210,16 +202,14 @@ def update_weblog_and_add_to_priority_weblogs(c_weblog, f_weblogs_queue, weblog_
 def find_and_udate_or_add_weblog_to_weblogs(c_weblog, f_weblogs_queue, weblog_queue, period):
 
     found_weblogs_ips = [] # go around non-iterable Queue!
-    while not f_weblogs_queue.empty():
-        wlg = f_weblogs_queue.get()
+    for wlg in f_weblogs_queue:
         found_weblogs_ips.append(wlg.ip_address)
 
     if c_weblog.ip_address not in found_weblogs_ips:
         add_to_weblogs(c_weblog, f_weblogs_queue)
     else: # weblog already exist so?
-        while not f_weblogs_queue.empty():
-            cur_weblog = f_weblogs_queue.get()
-            elapse_time = get_elapse_time(cur_weblog, c_weblog)
+        for cur_weblog in f_weblogs_queue:
+            elapse_time = get_elapse_time(cur_weblog.start_datetime, c_weblog.start_datetime)
             if elapse_time == period:
                 update_weblog_and_add_to_priority_weblogs(cur_weblog, f_weblogs_queue, weblog_queue)
             else:
@@ -228,8 +218,7 @@ def find_and_udate_or_add_weblog_to_weblogs(c_weblog, f_weblogs_queue, weblog_qu
 
 def finaly_update_priority_queue(f_weblogs_queue, weblog_queue):
 
-    while not f_weblogs_queue.empty():
-        wblg = f_weblogs_queue.get()
+    for wblg in  f_weblogs_queue:
         weblog_queue.put(wblg)  # TO Do: Put in some priority?
 
 
