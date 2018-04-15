@@ -83,24 +83,27 @@ def do_analysis(data, read_weblogs, output_weblogs, inactivity_period):
 
 def analyze_and_update(cur_weblog, prev_weblog, read_weblogs, output_weblogs, elapse_time, period ):
 
-    if(cur_weblog.start_datetime == prev_weblog.start_datetime):
-        if cur_weblog.has_same_ip(prev_weblog):
-            if elapse_time == period:
-                update_weblog_and_add_to_priority_weblogs(cur_weblog, read_weblogs, output_weblogs)
-            else:
-                update_weblog(cur_weblog, read_weblogs) # what if elapse_time > period?
-        else: # Different ips
-            find_and_udate_or_add_weblog_to_weblogs(cur_weblog, read_weblogs, output_weblogs, period)
+    if cur_weblog.start_datetime != prev_weblog.start_datetime: # change in date time so loop
+        find_and_udate_or_add_weblog_to_weblogs(cur_weblog, read_weblogs, output_weblogs, period)
     else:
-        if cur_weblog.has_same_ip(prev_weblog):
-            if elapse_time == period:
-                update_weblog_and_add_to_priority_weblogs(cur_weblog, read_weblogs, output_weblogs)
-            else:
-                update_weblog(cur_weblog, read_weblogs) # what if elapse_time > period?
-        else: # Different ips
-            find_and_udate_or_add_weblog_to_weblogs(cur_weblog, read_weblogs, output_weblogs, period)
+        update_weblog_and_add_to_priority_weblogs(cur_weblog, read_weblogs, output_weblogs, period)
 
-        #add_to_weblogs(cur_weblog, read_weblogs)
+
+def find_and_udate_or_add_weblog_to_weblogs(c_weblog, read_weblogs, output_weblogs, period):
+
+    read_weblogs_ips = [] # go around non-iterable Aabstract class!
+    for wlg in read_weblogs:
+        read_weblogs_ips.append(wlg.ip_address)
+
+    if c_weblog.ip_address not in read_weblogs_ips:
+        add_to_weblogs(c_weblog, read_weblogs)
+    else: # weblog already exist so?
+        for cur_weblog in read_weblogs:
+            elapse_time = get_elapse_time(cur_weblog.start_datetime, c_weblog.start_datetime)
+            if elapse_time == period:
+                update_weblog_and_add_to_priority_weblogs(cur_weblog, read_weblogs, output_weblogs,period)
+            else:
+                update_weblog(c_weblog, read_weblogs)
 
 
 
@@ -133,39 +136,38 @@ def update_weblog(c_weblog, read_weblogs):
                 add_to_weblogs(c_weblog, read_weblogs)
 
 
-def update_weblog_and_add_to_priority_weblogs(c_weblog, read_weblogs, output_weblogs):
+def update_weblog_and_add_to_priority_weblogs(c_weblog, read_weblogs, output_weblogs, priority):
 
     for cur_weblog in read_weblogs:
         if cur_weblog.has_same_ip(c_weblog):
             cur_weblog.update_weblog_with_other(c_weblog)
-            output_weblogs.put(cur_weblog)
+            elapse_time = get_elapse_time(cur_weblog.start_datetime, c_weblog.start_datetime)
+            if elapse_time == priority:
+                output_weblogs.put(cur_weblog)
+        else: # Different IPs
+            add_to_weblogs(c_weblog, read_weblogs)
 
             #remove cur_weblog from read_weblogs
             # To Do: How to remove element from Queue? or use Linked List
 
 
-def find_and_udate_or_add_weblog_to_weblogs(c_weblog, read_weblogs, output_weblogs, period):
-
-    read_weblogs_ips = [] # go around non-iterable Aabstract class!
-    for wlg in read_weblogs:
-        read_weblogs_ips.append(wlg.ip_address)
-
-    if c_weblog.ip_address not in read_weblogs_ips:
-        add_to_weblogs(c_weblog, read_weblogs)
-    else: # weblog already exist so?
-        for cur_weblog in read_weblogs:
-            elapse_time = get_elapse_time(cur_weblog.start_datetime, c_weblog.start_datetime)
-            if elapse_time == period:
-                update_weblog_and_add_to_priority_weblogs(cur_weblog, read_weblogs, output_weblogs)
-            else:
-                update_weblog(c_weblog, read_weblogs)
-
 
 def finaly_update_priority_queue(read_weblogs, output_weblogs):
 
+    output_weblog_ips = []
+    while not output_weblogs.empty():
+        webg = output_weblogs.get()
+        output_weblog_ips.append(webg.ip_address)
+
+    # TO Do: Put in some entry/read priority?
     if len(read_weblogs) != 0:
         for weblog in read_weblogs:
-            output_weblogs.put(weblog)  # TO Do: Put in some entry/read priority?
+            if weblog.ip_address in output_weblog_ips:
+                continue
+            else:
+                output_weblogs.put(weblog)
+                #pass  # need to update end_datetime, duration & number of documents!
+
 
     """
     if len(read_weblogs) != 0:

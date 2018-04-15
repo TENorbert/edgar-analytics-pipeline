@@ -25,6 +25,7 @@ def main():
 	read_weblogs = []  #Q.PriorityQueue() # Testing using PQueues
 
 	output_weblogs = Q.Queue()  ## scalability
+	#output_weblogs = Q.PriorityQueue()  ## scalability
 
 	#lines = get_data_lines(data_file)
 	analyze(data_file, read_weblogs, output_weblogs, inactivity_period)
