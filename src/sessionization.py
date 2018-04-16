@@ -6,9 +6,14 @@ from helper import *  # helper functions
 
 
 def analyze(csv_filename, read_weblogs, output_weblogs ,inactivity_period):
-    '''
-        creates dictionary of weblogs for each line
-    '''
+    """
+     creates dictionary of weblogs for each line and analyze each line!
+    :param csv_filename:
+    :param read_weblogs:
+    :param output_weblogs:
+    :param inactivity_period:
+    :return:
+    """
     try:
         data = read_csv(csv_filename)
         do_analysis(data, read_weblogs, output_weblogs, inactivity_period)
@@ -18,156 +23,223 @@ def analyze(csv_filename, read_weblogs, output_weblogs ,inactivity_period):
 
 
 def do_analysis(data, read_weblogs, output_weblogs, inactivity_period):
-    '''
-        Perform Analysis and fills session ended weblogs in Queue
-        Extract Outputs(ip, startTime, endtime, duration,  number of req docs) and
-        Write Output to files
-    '''
-
-    last_weblog = data[-1]
-    #print(last_weblog)
-    first_weblog = create_weblog(data[0])
-    read_weblogs.append(first_weblog)
-    print("first Weblog has duration = {} s".format(first_weblog.duration))
-    #print(first_weblog.ip_address)
     """
-    if first_weblog.ip_address is not None:
-    #read_weblogs.put(previous_weblog.start_datetime, previous_weblog)
-    read_weblogs.put(first_weblog)
-    #read_weblogs[first_weblog.start_datetime].append(first_weblog)
+    Perform Analysis and fills session ended weblogs in Queue
+    Extract Outputs(ip, startTime, endtime, duration,  number of req docs) and
+    Write Output to files
+    :param data:
+    :param read_weblogs:
+    :param output_weblogs:
+    :param inactivity_period:
+    :return:
     """
+    try:
+        last_weblog = data[-1]
+        #print(last_weblog)
+        first_weblog = create_weblog(data[0])
+        read_weblogs.append(first_weblog)
+        print("first Weblog has duration = {} s".format(first_weblog.duration))
+        #print(first_weblog.ip_address)
+        """
+        if first_weblog.ip_address is not None:
+        #read_weblogs.put(previous_weblog.start_datetime, previous_weblog)
+        read_weblogs.put(first_weblog)
+        #read_weblogs[first_weblog.start_datetime].append(first_weblog)
+        """
 
-    for i in range(1, len(data)):
-        assert (len(data[i]) == 15 and len(last_weblog) == 15), "missing lines!"
-        previous_weblog = create_weblog(data[i-1])
-        current_weblog = create_weblog(data[i])
+        for i in range(1, len(data)):
+            assert (len(data[i]) == 15 and len(last_weblog) == 15), "missing lines!"
+            previous_weblog = create_weblog(data[i-1])
+            current_weblog = create_weblog(data[i])
 
-        elapsed_time = get_elapse_time(previous_weblog.start_datetime, current_weblog.start_datetime)
-        #print("Elapsed Time = {0}".format(elapsed_time))
+            #elapsed_time = get_elapse_time(previous_weblog.start_datetime, current_weblog.start_datetime)
+            #print("Elapsed Time = {0}".format(elapsed_time))
 
-        if data[i] is not last_weblog:
-            #Analyze each weblog & update Queue
+            if data[i] is not last_weblog:
+                #Analyze each weblog & update Queue
 
-            analyze_and_update(current_weblog, previous_weblog,
-                               read_weblogs,
-                               output_weblogs, elapsed_time,
-                               inactivity_period
+                analyze_and_update(current_weblog, previous_weblog,
+                                   read_weblogs,
+                                   output_weblogs,
+                                   inactivity_period
+                                   )
+            else:
+                #Analyze each weblog, update found weblogs & add weblogs to Queue
+
+                analyze_and_update(current_weblog, previous_weblog,
+                                   read_weblogs,
+                                   output_weblogs,
+                                   inactivity_period
+                                   )
+
+                finaly_update_priority_queue(read_weblogs, output_weblogs)
+
+
+        """
+        print("======================================================================")
+        print("Writing output to file!\n")
+        test_file = './test_output_file.txt'
+        while not output_weblogs.empty():
+            cur_weblog = output_weblogs.get()
+            write_data_to_file(test_file,
+                               cur_weblog.ip_address, cur_weblog.start_datetime,
+                               cur_weblog.end_datetime, cur_weblog.request_document,
+                               cur_weblog.duration, cur_weblog.doc_number, "\n"
                                )
+        print("======================================================================")
+        """
+    except Exception:
+        print("Function do_analysis failed!")
+
+
+def analyze_and_update(cur_weblog, prev_weblog, read_weblogs, output_weblogs, period ):
+    """
+     Analyze current weblog with previous weblog and perform the needed action: weither add
+     to list of weblogs or put into Queue
+    :param cur_weblog:
+    :param prev_weblog:
+    :param read_weblogs:
+    :param output_weblogs:
+    :param period:
+    :return:
+    """
+    try:
+
+        if cur_weblog.start_datetime != prev_weblog.start_datetime: # change in date time so loop
+            find_and_udate_or_add_weblog_to_weblogs(cur_weblog, read_weblogs, output_weblogs, period)
         else:
-            #Analyze each weblog, update found weblogs & add weblogs to Queue
-
-            analyze_and_update(current_weblog, previous_weblog,
-                               read_weblogs,
-                               output_weblogs, elapsed_time,
-                               inactivity_period
-                               )
-
-            finaly_update_priority_queue(read_weblogs, output_weblogs)
-
-
-    """
-    print("======================================================================")
-    print("Writing output to file!\n")
-    test_file = './test_output_file.txt'
-    while not output_weblogs.empty():
-        cur_weblog = output_weblogs.get()
-        write_data_to_file(test_file,
-                           cur_weblog.ip_address, cur_weblog.start_datetime,
-                           cur_weblog.end_datetime, cur_weblog.request_document,
-                           cur_weblog.duration, cur_weblog.doc_number, "\n"
-                           )
-    print("======================================================================")
-    """
-
-
-
-def analyze_and_update(cur_weblog, prev_weblog, read_weblogs, output_weblogs, elapse_time, period ):
-
-    if cur_weblog.start_datetime != prev_weblog.start_datetime: # change in date time so loop
-        find_and_udate_or_add_weblog_to_weblogs(cur_weblog, read_weblogs, output_weblogs, period)
-    else:
-        update_weblog_and_add_to_priority_weblogs(cur_weblog, read_weblogs, output_weblogs, period)
-
+            update_weblog_and_add_to_priority_weblogs(cur_weblog, read_weblogs, output_weblogs, period)
+    except Exception as e:
+        print(e, type(e))
 
 def find_and_udate_or_add_weblog_to_weblogs(c_weblog, read_weblogs, output_weblogs, period):
+    """
+    Search for current_weblog in the list and if already in list of weblogs, update its information(
+    documents, duration etc) and if not add current weblog into list of weblogs.
+    :param c_weblog:
+    :param read_weblogs:
+    :param output_weblogs:
+    :param period:
+    :return:
+    """
+    try:
 
-    read_weblogs_ips = [] # go around non-iterable Aabstract class!
-    for wlg in read_weblogs:
-        read_weblogs_ips.append(wlg.ip_address)
+        read_weblogs_ips = [] # go around non-iterable Aabstract class!
+        for wlg in read_weblogs:
+            read_weblogs_ips.append(wlg.ip_address)
 
-    if c_weblog.ip_address not in read_weblogs_ips:
-        add_to_weblogs(c_weblog, read_weblogs)
-    else: # weblog already exist so?
-        for cur_weblog in read_weblogs:
-            elapse_time = get_elapse_time(cur_weblog.start_datetime, c_weblog.start_datetime)
-            if elapse_time == period:
-                update_weblog_and_add_to_priority_weblogs(cur_weblog, read_weblogs, output_weblogs,period)
-            else:
-                update_weblog(c_weblog, read_weblogs)
-
+        if c_weblog.ip_address not in read_weblogs_ips:
+            add_to_weblogs(c_weblog, read_weblogs)
+        else: # weblog already exist so?
+            for cur_weblog in read_weblogs:
+                elapse_time = get_elapse_time(cur_weblog.start_datetime, c_weblog.start_datetime)
+                if elapse_time == period:
+                    update_weblog_and_add_to_priority_weblogs(cur_weblog, read_weblogs, output_weblogs,period)
+                else:
+                    update_weblog(c_weblog, read_weblogs)
+    except Exception as e:
+        print(e, type(e))
 
 
 def add_to_weblogs(c_weblog, read_weblogs):
+    """
+     Add new weblog created into the list of weblogs
+    :param c_weblog:
+    :param read_weblogs:
+    :return:
+    """
+    try:
 
-    read_weblogs_ips = []  #create possibly sorted list
-    for wlg in read_weblogs:
-        read_weblogs_ips.append(wlg.ip_address)
+        read_weblogs_ips = []  #create possibly sorted list
+        for wlg in read_weblogs:
+            read_weblogs_ips.append(wlg.ip_address)
 
-    if c_weblog.ip_address not in read_weblogs_ips:
-        print("Adding ip = {0} & document = {1} to Weblogs!".format(c_weblog.ip_address, c_weblog.request_document))
-        read_weblogs.append(c_weblog)
-    else:
-        pass
+        if c_weblog.ip_address not in read_weblogs_ips:
+            print("Adding ip = {0} & document = {1} to Weblogs!".format(c_weblog.ip_address, c_weblog.request_document))
+            read_weblogs.append(c_weblog)
+        else:
+            pass
+    except Exception as e:
+        print(e, type(e))
 
 
 
 def update_weblog(c_weblog, read_weblogs):
-
-    if len(read_weblogs) == 0:
-        add_to_weblogs(c_weblog, read_weblogs)
-
-    for cur_weblog in read_weblogs:
-        if cur_weblog.has_same_ip(c_weblog):
-            if cur_weblog.has_same_start_datetime(c_weblog): #??
-                if cur_weblog.request_document != c_weblog.request_document:
-                    cur_weblog.update_weblog_with_other(c_weblog)
-        else:
-            if cur_weblog.has_same_start_datetime(c_weblog):  #??
-                add_to_weblogs(c_weblog, read_weblogs)
-
-
-def update_weblog_and_add_to_priority_weblogs(c_weblog, read_weblogs, output_weblogs, priority):
-
-    for cur_weblog in read_weblogs:
-        if cur_weblog.has_same_ip(c_weblog):
-            cur_weblog.update_weblog_with_other(c_weblog)
-            elapse_time = get_elapse_time(cur_weblog.start_datetime, c_weblog.start_datetime)
-            if elapse_time == priority:
-                output_weblogs.put(cur_weblog)
-        else: # Different IPs
+    """
+     Updates found weblog i.e if current weblog( ip address) already in list with current weblog
+     document and duration.
+    :param c_weblog:
+    :param read_weblogs:
+    :return:
+    """
+    try:
+        if len(read_weblogs) == 0:
             add_to_weblogs(c_weblog, read_weblogs)
 
-            #remove cur_weblog from read_weblogs
-            # To Do: How to remove element from Queue? or use Linked List
+        for cur_weblog in read_weblogs:
+            if cur_weblog.has_same_ip(c_weblog):
+                if cur_weblog.has_same_start_datetime(c_weblog): #??
+                    if cur_weblog.request_document != c_weblog.request_document:
+                        cur_weblog.update_weblog_with_other(c_weblog)
+            else:
+                if cur_weblog.has_same_start_datetime(c_weblog):  #??
+                    add_to_weblogs(c_weblog, read_weblogs)
+    except Exception as e:
+        print(e, type(e))
 
+def update_weblog_and_add_to_priority_weblogs(c_weblog, read_weblogs, output_weblogs, priority):
+    """
+     Update found weblogs( if Ip address weblog already in list) and check if session as ended
+     then put session ended weblogs into Queue.
+    :param c_weblog:
+    :param read_weblogs:
+    :param output_weblogs:
+    :param priority:
+    :return:
+    """
+    try:
+
+        for cur_weblog in read_weblogs:
+            if cur_weblog.has_same_ip(c_weblog):
+                cur_weblog.update_weblog_with_other(c_weblog)
+                elapse_time = get_elapse_time(cur_weblog.start_datetime, c_weblog.start_datetime)
+                if elapse_time == priority:
+                    output_weblogs.put(cur_weblog)
+            else: # Different IPs
+                add_to_weblogs(c_weblog, read_weblogs)
+
+                #remove cur_weblog from read_weblogs
+                # To Do: How to remove element from Queue? or use Linked List
+    except Exception as e:
+        print(e, type(e))
 
 
 def finaly_update_priority_queue(read_weblogs, output_weblogs):
+    """
+    Supposed to transfer remaining session-yet-to-end weblogs into Queue ordered in date time
+    as read from file into the Queue.
+    Tried using a PriorityQueue with read date time as priority but ran into so many debugging
+    issues. Will be fun to get this going!
+    :param read_weblogs:
+    :param output_weblogs:
+    :return:
+    """
+    try:
+        output_weblog_ips = []
+        while not output_weblogs.empty():
+            webg = output_weblogs.get()
+            output_weblog_ips.append(webg.ip_address)
 
-    output_weblog_ips = []
-    while not output_weblogs.empty():
-        webg = output_weblogs.get()
-        output_weblog_ips.append(webg.ip_address)
-
-    # TO Do: Put in some entry/read priority?
-    if len(read_weblogs) != 0:
-        for weblog in read_weblogs:
-            if weblog.ip_address in output_weblog_ips:
-                continue
-            else:
-                output_weblogs.put(weblog)
-                #pass  # need to update end_datetime, duration & number of documents!
-
+        # TO Do: Put in some entry/read priority?
+        if len(read_weblogs) != 0:
+            for weblog in read_weblogs:
+                if weblog.ip_address in output_weblog_ips:
+                    continue
+                else:
+                    output_weblogs.put(weblog)
+                    #pass  # need to update end_datetime, duration & number of documents!
+    except Exception as e:
+        print(e, type(e))
 
     """
     if len(read_weblogs) != 0:
@@ -360,6 +432,8 @@ def create_weblog(row):
     return weblog
 
 
+## ---- Unused Functions--------------------------------------------------------------------------------
+##------------------------------------------------------------------------------------------------------
 def create_session(row):
     '''
         Uses row from file to create a given session:
@@ -403,10 +477,6 @@ def update_same_ip_scenario(cur_weblog, read_weblogs):
 
     except Exception as e:
         print(e, type(e))
-
-
-
-
 
 def update_different_ip_scenario(cur_weblog, read_weblogs):
     '''
