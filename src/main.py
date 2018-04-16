@@ -14,7 +14,7 @@ except ImportError:
 
 def main():
 	"""
-		main funtion!
+		main function!
 	"""
 	try:
 		passed_files = command_parser()
@@ -35,6 +35,25 @@ def main():
 		#print("read_weblogs length = {0}".format(read_weblogs.qsize()))
 		print("read_weblogs length = {0}".format(len(read_weblogs)))
 
+
+		print("======================================================================")
+		print("Output_weblogs length = {0}".format(output_weblogs.qsize()))
+		print("Writing output to file = {0}!\n".format(session_file))
+		output_filename = session_file #'./test_output_file.txt'
+		# TO DO: Can write and close file in while loop!! Fix this!! 
+		while not output_weblogs.empty():
+			cur_weblog = output_weblogs.get()
+			write_data_to_file(output_filename,
+							  cur_weblog.ip_address, cur_weblog.start_datetime,
+							  cur_weblog.end_datetime, cur_weblog.request_document,
+							  cur_weblog.duration, cur_weblog.doc_number, "\n"
+							  )
+
+		print("Writing to output file ends!")
+		print("======================================================================")
+
+
+		'''
 		#while not read_weblogs.empty():
 		for cur_weblog in read_weblogs:
 			#print(cur_weblog)
@@ -56,6 +75,8 @@ def main():
 					cur_weblog.end_datetime, cur_weblog.duration, cur_weblog.doc_number)
 				  )
 		print("======================================================================")
+		'''
+
 	except Exception:
 		print("main Function failed!")
 

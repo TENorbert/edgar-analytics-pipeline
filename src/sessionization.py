@@ -38,7 +38,7 @@ def do_analysis(data, read_weblogs, output_weblogs, inactivity_period):
         #print(last_weblog)
         first_weblog = create_weblog(data[0])
         read_weblogs.append(first_weblog)
-        print("first Weblog has duration = {} s".format(first_weblog.duration))
+        #print("first Weblog has duration = {} s".format(first_weblog.duration))
         #print(first_weblog.ip_address)
         """
         if first_weblog.ip_address is not None:
@@ -74,20 +74,6 @@ def do_analysis(data, read_weblogs, output_weblogs, inactivity_period):
 
                 finaly_update_priority_queue(read_weblogs, output_weblogs)
 
-
-        """
-        print("======================================================================")
-        print("Writing output to file!\n")
-        test_file = './test_output_file.txt'
-        while not output_weblogs.empty():
-            cur_weblog = output_weblogs.get()
-            write_data_to_file(test_file,
-                               cur_weblog.ip_address, cur_weblog.start_datetime,
-                               cur_weblog.end_datetime, cur_weblog.request_document,
-                               cur_weblog.duration, cur_weblog.doc_number, "\n"
-                               )
-        print("======================================================================")
-        """
     except Exception:
         print("Function do_analysis failed!")
 
@@ -155,7 +141,7 @@ def add_to_weblogs(c_weblog, read_weblogs):
             read_weblogs_ips.append(wlg.ip_address)
 
         if c_weblog.ip_address not in read_weblogs_ips:
-            print("Adding ip = {0} & document = {1} to Weblogs!".format(c_weblog.ip_address, c_weblog.request_document))
+            #print("Adding ip = {0} & document = {1} to Weblogs!".format(c_weblog.ip_address, c_weblog.request_document))
             read_weblogs.append(c_weblog)
         else:
             pass
