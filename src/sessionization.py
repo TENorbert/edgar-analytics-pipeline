@@ -233,6 +233,31 @@ def finaly_update_priority_queue(read_weblogs, output_weblogs):
         output_weblogs.put(read_weblogs[i])  # TO Do: Put in some entry/read priority?
     """
 
+def write_output(output_queue, file_name):
+    """
+    Takes given data in output_queue and writes(append each time) the data to txt file
+    Default file path is '..'
+
+    :param file_name:
+    :param output_container:
+    :return:
+    """
+    try:
+        with open(file_name, 'a') as f_obj:
+            f_obj.write("Output_weblogs length = {0}".format(output_queue.qsize()))
+            '''
+            while not output_queue.empty():
+                cur_weblog = output_queue.get()
+                f_obj.write(str(cur_weblog.ip_address) + ',' + str(cur_weblog.start_datetime) + ','
+                           + str(cur_weblog.end_datetime) + ',' + str(cur_weblog.request_document) + ','
+                            + str(cur_weblog.duration) + ',' + str(cur_weblog.get_document_number()) + "\n"
+                           )
+            '''
+    except Exception as e:
+        print("FileNotFoundError")
+        print(e, type(e))
+        ##print("File Not found!")
+
 
 
 
@@ -283,17 +308,18 @@ class Weblog(object):
             return sum(self.weblog_durations)
         else:
             return self.duration
-
-    def get_document_count(self, date_time_list):
+    """
+    def get_document_count(self):
         '''
-            Returns document number based on start_datetime?
+        Returns document number based on start_datetime?
         :param date_time_list:
         :return:
         '''
         count = 0
-        for dt in date_time_list:
+        for dt in self.requested_documents:
             count += self.document_counter[dt]  # Sum length of all date times for this ip
         return count
+    """
 
     # M Mutators/Setters
     def set_ip(self, ip_address):
@@ -354,7 +380,12 @@ class Weblog(object):
         #end = datetime.strptime(self.end_datetime, '%Y-%m-%d:%H:%M:%S')
         #val = get_elapse_time(end, start)
         val = get_elapse_time(self.start_datetime, self.end_datetime)
-        self.weblog_durations.append(val)
+        default_val = 1
+        if val == 0:
+            self.weblog_durations.append(default_val)
+        else:
+            self.weblog_durations.append(val)
+
         self.duration = self.get_total_duration()
 
     def has_same_ip(self, other):

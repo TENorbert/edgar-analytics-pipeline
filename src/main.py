@@ -14,7 +14,7 @@ except ImportError:
 
 def main():
 	"""
-		main function!
+		main function
 	"""
 	try:
 		passed_files = command_parser()
@@ -28,32 +28,36 @@ def main():
 		output_weblogs = Q.Queue()  ## scalability
 		#output_weblogs = Q.PriorityQueue()  ## scalability
 
-		#lines = get_data_lines(data_file)
+
 		analyze(data_file, read_weblogs, output_weblogs, inactivity_period)
 
-		# Print out using Queue
+		#Print out using Queue
 		#print("read_weblogs length = {0}".format(read_weblogs.qsize()))
 		print("read_weblogs length = {0}".format(len(read_weblogs)))
 
 
 		print("======================================================================")
 		print("Output_weblogs length = {0}".format(output_weblogs.qsize()))
-		print("Writing output to file = {0}!\n".format(session_file))
-		output_filename = session_file #'./test_output_file.txt'
-		# TO DO: Can write and close file in while loop!! Fix this!! 
-		while not output_weblogs.empty():
-			cur_weblog = output_weblogs.get()
-			write_data_to_file(output_filename,
-							  cur_weblog.ip_address, cur_weblog.start_datetime,
-							  cur_weblog.end_datetime, cur_weblog.request_document,
-							  cur_weblog.duration, cur_weblog.doc_number, "\n"
-							  )
+
+		output_filename = session_file
+		#output_filename = os.path.join('./', 'test_output_file.txt')
+		print("Writing output to file = {0}!\n".format(output_filename))
+		#write_output(output_weblogs, output_filename)
+		with open(output_filename, 'a') as f_obj:
+			#f_obj.write("Output_weblogs length = {0} \n".format(output_weblogs.qsize()))
+			while not output_weblogs.empty():
+				cur_weblog = output_weblogs.get()
+				f_obj.write(str(cur_weblog.ip_address) + ',' + str(cur_weblog.start_datetime) + ','
+						+ str(cur_weblog.end_datetime) + ',' + str(cur_weblog.duration) + ','
+						+ str(cur_weblog.get_document_number()) + "\n"
+						)
 
 		print("Writing to output file ends!")
 		print("======================================================================")
 
 
 		'''
+		#Debugging!
 		#while not read_weblogs.empty():
 		for cur_weblog in read_weblogs:
 			#print(cur_weblog)
@@ -64,7 +68,7 @@ def main():
 				  )
 
 		print("\n")
-		# Print Queue content
+		#Print Queue content
 		print("Output_weblogs has {0} weblogs for output".format(output_weblogs.qsize()))
 		print("======================================================================")
 		while not output_weblogs.empty():
@@ -72,13 +76,12 @@ def main():
 			# print(cur_weblog)
 			print("{0}, {1}, {2}, {3}, {4}\
 					".format(cur_weblog.ip_address, cur_weblog.start_datetime,
-					cur_weblog.end_datetime, cur_weblog.duration, cur_weblog.doc_number)
-				  )
+					cur_weblog.end_datetime, cur_weblog.duration, cur_weblog.get_document_number())
+				)
 		print("======================================================================")
-		'''
-
+		#'''
 	except Exception:
-		print("main Function failed!")
+		print("main failed!")
 
 
 if __name__ == "__main__":
