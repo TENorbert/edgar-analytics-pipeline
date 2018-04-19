@@ -10,8 +10,6 @@ except ImportError:
     import queue as Q
 
 
-
-
 def main():
 	"""
 		main function
@@ -23,11 +21,11 @@ def main():
 		session_file = passed_files["session"]
 		inactivity_period = int(get_inactivity_period(inactivity_file))
 
-		read_weblogs = []  #Q.PriorityQueue() # Testing using PQueues
+		read_weblogs = [] #data structure for read weblogs
+		#read_weblogs = Q.PriorityQueue() # Testing using PQueues
 
-		output_weblogs = Q.Queue()  ## scalability
-		#output_weblogs = Q.PriorityQueue()  ## scalability
-
+		output_weblogs = Q.Queue() #output data structure for session ended weblogs, some entry priority? & scalability?
+		#output_weblogs = Q.PriorityQueue()
 
 		analyze(data_file, read_weblogs, output_weblogs, inactivity_period)
 
